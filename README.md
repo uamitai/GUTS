@@ -1,2 +1,2 @@
 # GUTS
-Small action indie game currently under development.
+Action RPG indie game currently under development.
