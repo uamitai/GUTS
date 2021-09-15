@@ -1063,7 +1063,7 @@ CompositeCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_GeometryType: 0
+  m_GeometryType: 1
   m_GenerationType: 0
   m_EdgeRadius: 0
   m_ColliderPaths:
@@ -1366,9 +1366,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 712002194}
+  - component: {fileID: 712002191}
   - component: {fileID: 712002193}
   - component: {fileID: 712002192}
-  - component: {fileID: 712002191}
   - component: {fileID: 712002195}
   m_Layer: 0
   m_Name: Player
@@ -1391,6 +1391,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 5
   rb: {fileID: 712002192}
+  threshhold: 0.33
 --- !u!50 &712002192
 Rigidbody2D:
   serializedVersion: 4

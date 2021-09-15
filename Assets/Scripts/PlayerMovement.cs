@@ -4,6 +4,7 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed;
     [SerializeField] private Rigidbody2D rb;
+    [SerializeField] private float threshhold;
 
     private ProController controller;
     private Vector2 vel;
@@ -20,8 +21,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //move player       x = x0 + v * dt
-        rb.MovePosition(rb.position + vel * moveSpeed * Time.fixedDeltaTime);
+        if(vel.magnitude > threshhold)
+        {
+            //move player       x = x0 + v * dt
+            rb.MovePosition(rb.position + vel * moveSpeed * Time.fixedDeltaTime);
+            
+            //rotate player
+            transform.up = -vel;
+        }
+        Debug.Log(vel.magnitude);
     }
 
     //enable\disable input actions
