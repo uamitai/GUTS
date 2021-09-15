@@ -1,0 +1,33 @@
+{
+    "name": "ProController",
+    "maps": [
+        {
+            "name": "Input",
+            "id": "275eda47-386e-482f-92c2-46d1f24697e3",
+            "actions": [
+                {
+                    "name": "LeftStick",
+                    "type": "Value",
+                    "id": "c0a6a6ce-6b9e-4fe7-94e6-8f548d5e5a41",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "1e66f9a1-c28e-406e-bce3-63402a53b842",
+                    "path": "<SwitchProControllerHID>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftStick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
