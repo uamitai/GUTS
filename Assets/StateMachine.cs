@@ -10,7 +10,8 @@ public enum PlayerState
     chargeSword,
     sideJump,
     spinAttack,
-    lungeAttack
+    lungeAttack,
+    jumpAttack
 }
 
 public class StateMachine : MonoBehaviour
@@ -25,7 +26,9 @@ public class StateMachine : MonoBehaviour
         states.Add(PlayerState.walk, new PlayerWalkState());
         states.Add(PlayerState.attack, new PlayerAttackState());
         states.Add(PlayerState.recover, new PlayerRecoverykState());
+        states.Add(PlayerState.spinAttack, new PlayerSpinAttackState());
         states.Add(PlayerState.chargeSword, new PlayerChargeSwordState());
+        states.Add(PlayerState.lungeAttack, new PlayerLungeAttackState());
 
         //defaultly start with the walk state
         ChangeState(PlayerState.walk);

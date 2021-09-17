@@ -1,22 +1,20 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerChargeSwordState : State
 {
     private Vector2 vel;
-    private Rigidbody2D rb;
     private PlayerState currentState;
-    private float startTime;
+    private float chargeTime;
 
     // Start is called before the first frame update
     public override void Start(GameObject _player)
     {
         base.Start(_player);
+
         vel = Vector2.zero;
         currentState = PlayerState.chargeSword;
-        rb = player.GetComponent<Rigidbody2D>();
-        startTime = Time.time;
+        chargeTime = Time.time;
     }
 
     // Update is called once per frame
@@ -29,7 +27,7 @@ public class PlayerChargeSwordState : State
 
         if(Input.GetButtonUp(Constants.BButton))
         {
-            BButtonPressed();
+            BButtonRleased();
         }
 
         //player can walk during the charge sword state
@@ -56,15 +54,14 @@ public class PlayerChargeSwordState : State
             return;
         }
 
+        //the dot product determines the component of the held direction on the left stick above the right vector of the player transform
         float dotProduct = Vector2.Dot(vel, player.transform.right);
         //Debug.Log(dotProduct);
 
         //if the dot product is high enough perform a side jump, otherwise go to recovery state
         if(Mathf.Abs(dotProduct) > Constants.sideJumpThreshhold)
         {
-            Debug.Log("sideJump");
-            currentState = PlayerState.sideJump;
-            stateMachine.RunCoroutine(ExecuteSideJump(dotProduct));
+            stateMachine.RunCoroutine(ExecuteSideJump(Mathf.Sign(dotProduct)));
         }
         else
         {
@@ -72,52 +69,43 @@ public class PlayerChargeSwordState : State
         }
     }
 
-    private void BButtonPressed()
+    private void BButtonRleased()
     {
-        //executing side jump
-        if(currentState != PlayerState.chargeSword)
+        //while executing side jump
+        if(currentState == PlayerState.sideJump)
         {
-            return;
+            //stop player and go to attack state
+            rb.velocity = Vector2.zero;
+            stateMachine.StopAllCoroutines();
+            stateMachine.ChangeState(PlayerState.attack);
         }
-
-        if(Time.time - startTime > Constants.chargeSwordDuration)
+        //didn't charge enough
+        else if (Time.time - chargeTime < Constants.chargeSwordDuration)
         {
-            //lunge!
-            stateMachine.RunCoroutine(ExecuteLungeAttack());
+            stateMachine.ChangeState(PlayerState.walk);
         }
         else
         {
-            //didn't charge enough
-            stateMachine.ChangeState(PlayerState.walk);
+            //lunge!
+            stateMachine.ChangeState(PlayerState.lungeAttack);
         }
     }
 
-    private IEnumerator ExecuteSideJump(float dotProduct)
+    //direction is either 1 or -1, to determine if player jumps right or left respectively
+    private IEnumerator ExecuteSideJump(float direction)
     {
-        //give velocity to jump
-        rb.velocity = player.transform.right * Mathf.Sign(dotProduct) * Constants.sideJumpVelocity;
+        Debug.Log("sideJump");
+        currentState = PlayerState.sideJump;
 
-        //wait
+        //jump in given direction
+        rb.velocity = player.transform.right * direction * Constants.sideJumpVelocity;
+
+        //wait jump duration
         yield return new WaitForSeconds(Constants.sideJumpDuration);
 
-        //return
+        //cooldown and return
         rb.velocity = Vector2.zero;
         yield return new WaitForSeconds(Constants.sideJumpCooldownDuration);
         currentState = PlayerState.chargeSword;
-    }
-
-    private IEnumerator ExecuteLungeAttack()
-    {
-        //setup
-        Debug.Log("lungeAttack");
-        currentState = PlayerState.lungeAttack;
-        rb.velocity = -player.transform.up * Constants.lungeVelocity;
-
-        //wait duration
-        yield return new WaitForSeconds(Constants.lungeAttackDuration);
-
-        //stop
-        rb.velocity = Vector2.zero;
-        stateMachine.ChangeState(PlayerState.walk);
     }
 }

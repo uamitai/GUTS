@@ -2,14 +2,11 @@ using UnityEngine;
 
 public class PlayerWalkState : State
 {
-    private Rigidbody2D rb;
     private Vector2 vel;
 
     public override void Start(GameObject _player)
     {
         base.Start(_player);
-
-        rb = player.GetComponent<Rigidbody2D>();
         vel = Vector2.zero;
     }
 
