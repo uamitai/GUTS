@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerWalkState : State
+public class PlayerWalkState : PlayerBaseState
 {
     private Vector2 vel;
 
@@ -39,7 +39,11 @@ public class PlayerWalkState : State
             rb.MovePosition(rb.position + vel.normalized * Constants.moveSpeed * Time.fixedDeltaTime);
 
             //rotate player
-            player.transform.up = -vel;
+            player.transform.up = -vel.normalized;
+
+            //set animation parameters
+            animator.SetFloat(Constants.animatorXParameter, vel.x);
+            animator.SetFloat(Constants.animatorYParameter, vel.y);
         }
     }
 }

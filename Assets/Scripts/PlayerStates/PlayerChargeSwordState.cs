@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class PlayerChargeSwordState : State
+public class PlayerChargeSwordState : PlayerBaseState
 {
     private Vector2 vel;
     private PlayerState currentState;
@@ -27,7 +27,7 @@ public class PlayerChargeSwordState : State
 
         if(Input.GetButtonUp(Constants.BButton))
         {
-            BButtonRleased();
+            BButtonReleased();
         }
 
         //player can walk during the charge sword state
@@ -69,7 +69,7 @@ public class PlayerChargeSwordState : State
         }
     }
 
-    private void BButtonRleased()
+    private void BButtonReleased()
     {
         //while executing side jump
         if(currentState == PlayerState.sideJump)

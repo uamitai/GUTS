@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class PlayerRecoverykState : State
+public class PlayerRecoverykState : PlayerBaseState
 {
     public override void Start(GameObject _player)
     {

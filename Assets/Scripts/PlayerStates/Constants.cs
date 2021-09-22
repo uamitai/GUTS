@@ -1,10 +1,12 @@
 public static class Constants
 {
-    //input axis and button names
+    //input axis, button and animation parameter names
     public const string LeftStickHorizontal = "Left_Stick_Horizontal";
     public const string LeftStickVertical = "Left_Stick_Vertical";
     public const string BButton = "B_Button";
     public const string ZLTrigger = "ZL_Trigger";
+    public const string animatorXParameter = "X";
+    public const string animatorYParameter = "Y";
 
     //player movement speeds and threshholds
     public const float moveSpeed = 5f;

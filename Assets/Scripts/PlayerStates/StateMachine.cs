@@ -16,8 +16,8 @@ public enum PlayerState
 
 public class StateMachine : MonoBehaviour
 {
-    private Dictionary<PlayerState, State> states = new Dictionary<PlayerState, State>();
-    private State currentState;
+    private Dictionary<PlayerState, PlayerBaseState> states = new Dictionary<PlayerState, PlayerBaseState>();
+    private PlayerBaseState currentState;
 
     // Start is called before the first frame update
     void Start()
@@ -49,9 +49,9 @@ public class StateMachine : MonoBehaviour
     //change to new state and start it
     public void ChangeState(PlayerState state)
     {
+        Debug.Log(state);
         currentState = states[state];
         currentState.Start(gameObject);
-        Debug.Log(state);
     }
 
     public void RunCoroutine(IEnumerator ienumerator)
