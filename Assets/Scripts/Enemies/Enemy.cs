@@ -1,3 +1,6 @@
+//derived from entity, this is the common behavior of all enemies in the game
+
+using System.Collections;
 using UnityEngine;
 
 public enum EnemyState
@@ -8,28 +11,42 @@ public enum EnemyState
     chase
 }
 
-public class Enemy : MonoBehaviour
+public class Enemy : Entity
 {
-    [SerializeField] protected int health;
-    [SerializeField] protected int attack;
     [SerializeField] protected float moveSpeed;
-    [SerializeField] protected Vector2 homePos;
-    [SerializeField] protected Vector2 targetPos;
 
-    protected Rigidbody2D rb;
+    protected Vector2 homePos;
+    protected Vector2 targetPos;
     protected EnemyState currentState;
 
     // Start is called before the first frame update
-    public virtual void Start()
+    protected override void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        base.Start();
         homePos = transform.position;
         targetPos = transform.position;
     }
 
-    protected virtual void Move()
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+    }
+
+    protected void MoveTo(Vector2 target)
     {
         //move towards target position
-        rb.MovePosition(Vector2.MoveTowards(transform.position, targetPos, moveSpeed * Time.fixedDeltaTime));
+        rb.MovePosition(Vector2.MoveTowards(transform.position, target, moveSpeed * Time.fixedDeltaTime));
+    }
+
+    protected float DistanceFromTarget()
+    {
+        //return the distance between current position and given pos
+        return Vector2.Distance(transform.position, targetPos);
+    }
+
+    protected override IEnumerator EntityCollision()
+    {
+        rb.constraints = RigidbodyConstraints2D.FreezeAll;
+        yield break;
     }
 }
