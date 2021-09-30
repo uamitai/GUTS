@@ -4,6 +4,7 @@ using UnityEngine;
 
 public enum PlayerState
 {
+    idle,
     walk,
     attack,
     recover,
@@ -18,11 +19,13 @@ public class StateMachine : MonoBehaviour
 {
     private Dictionary<PlayerState, PlayerBaseState> states = new Dictionary<PlayerState, PlayerBaseState>();
     private PlayerBaseState currentState;
+    private const string hitboxTag = "Enemy";
 
     // Start is called before the first frame update
     void Start()
     {
         //add states to dict
+        states.Add(PlayerState.idle, new PlayerBaseState());
         states.Add(PlayerState.walk, new PlayerWalkState());
         states.Add(PlayerState.attack, new PlayerAttackState());
         states.Add(PlayerState.recover, new PlayerRecoverykState());
@@ -46,10 +49,24 @@ public class StateMachine : MonoBehaviour
         currentState.FixedUpdate();
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        //sword hit something
+        if(collision.gameObject.CompareTag(hitboxTag) && collision.isTrigger)
+        {
+            currentState.OnSword(collision.gameObject);
+        }
+    }
+
     //change to new state and start it
     public void ChangeState(PlayerState state)
     {
-        Debug.Log(state);
+        if(currentState == states[state])
+        {
+            return;
+        }
+
+        //Debug.Log(state);
         currentState = states[state];
         currentState.Start(gameObject);
     }

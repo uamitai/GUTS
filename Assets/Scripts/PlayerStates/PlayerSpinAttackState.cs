@@ -7,12 +7,22 @@ public class PlayerSpinAttackState : PlayerBaseState
     public override void Start(GameObject _player)
     {
         base.Start(_player);
+        sword.enabled = true;
+        currentState = PlayerState.chargeSword;
         stateMachine.RunCoroutine(ExecuteSpinAttack());
+    }
+
+    public override void Update()
+    {
+        if(Input.GetButtonUp(Constants.BButton))
+        {
+            currentState = PlayerState.walk;
+        }
     }
 
     private IEnumerator ExecuteSpinAttack()
     {
         yield return new WaitForSeconds(Constants.spinAttackDuration);
-        stateMachine.ChangeState(PlayerState.walk);
+        stateMachine.ChangeState(currentState);
     }
 }

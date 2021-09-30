@@ -6,6 +6,7 @@ public class PlayerRecoverykState : PlayerBaseState
     public override void Start(GameObject _player)
     {
         base.Start(_player);
+        sword.enabled = false;
         stateMachine.RunCoroutine(ExecuteRecovery());
     }
 

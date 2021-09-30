@@ -4,7 +4,6 @@ using UnityEngine;
 public class PlayerChargeSwordState : PlayerBaseState
 {
     private Vector2 vel;
-    private PlayerState currentState;
     private float chargeTime;
 
     // Start is called before the first frame update
@@ -32,8 +31,8 @@ public class PlayerChargeSwordState : PlayerBaseState
 
         //player can walk during the charge sword state
         vel = new Vector2(
-            Input.GetAxisRaw(Constants.LeftStickVertical),
-            -Input.GetAxisRaw(Constants.LeftStickHorizontal)
+            Input.GetAxisRaw(Constants.LeftStickHorizontal),
+            Input.GetAxisRaw(Constants.LeftStickVertical)
             );
     }
 
@@ -55,11 +54,11 @@ public class PlayerChargeSwordState : PlayerBaseState
         }
 
         //the dot product determines the component of the held direction on the left stick above the right vector of the player transform
-        float dotProduct = Vector2.Dot(vel, player.transform.right);
+        float dotProduct = Vector2.Dot(vel.normalized, player.transform.right);
         //Debug.Log(dotProduct);
 
         //if the dot product is high enough perform a side jump, otherwise go to recovery state
-        if(Mathf.Abs(dotProduct) > Constants.sideJumpThreshhold)
+        if(Mathf.Abs(dotProduct) > Mathf.Cos(Constants.sideJumpAngle))
         {
             stateMachine.RunCoroutine(ExecuteSideJump(Mathf.Sign(dotProduct)));
         }
@@ -74,10 +73,10 @@ public class PlayerChargeSwordState : PlayerBaseState
         //while executing side jump
         if(currentState == PlayerState.sideJump)
         {
-            //stop player and go to attack state
+            //stop player and go to lunge state
             rb.velocity = Vector2.zero;
             stateMachine.StopAllCoroutines();
-            stateMachine.ChangeState(PlayerState.attack);
+            stateMachine.ChangeState(PlayerState.lungeAttack);
         }
         //didn't charge enough
         else if (Time.time - chargeTime < Constants.chargeSwordDuration)
@@ -94,7 +93,7 @@ public class PlayerChargeSwordState : PlayerBaseState
     //direction is either 1 or -1, to determine if player jumps right or left respectively
     private IEnumerator ExecuteSideJump(float direction)
     {
-        Debug.Log("sideJump");
+        //Debug.Log("sideJump");
         currentState = PlayerState.sideJump;
 
         //jump in given direction

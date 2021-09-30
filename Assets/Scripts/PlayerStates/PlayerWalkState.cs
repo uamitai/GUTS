@@ -8,6 +8,7 @@ public class PlayerWalkState : PlayerBaseState
     {
         base.Start(_player);
         vel = Vector2.zero;
+        sword.enabled = false;
     }
 
     public override void Update()
@@ -24,8 +25,8 @@ public class PlayerWalkState : PlayerBaseState
 
         //calculate velocity based on input
         vel = new Vector2(
-            Input.GetAxisRaw(Constants.LeftStickVertical),
-            -Input.GetAxisRaw(Constants.LeftStickHorizontal)
+            Input.GetAxisRaw(Constants.LeftStickHorizontal),
+            Input.GetAxisRaw(Constants.LeftStickVertical)
             );
         //Debug.Log(vel.magnitude);
     }
