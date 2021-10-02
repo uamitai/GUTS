@@ -3,20 +3,11 @@
 using System.Collections;
 using UnityEngine;
 
-public enum EnemyState
-{
-    idle,
-    walk,
-    attack
-}
-
 public class Enemy : Entity
 {
-    [SerializeField] protected float moveSpeed;
-
     protected Vector2 homePos;
     protected Vector2 targetPos;
-    protected EnemyState currentState;
+    protected bool isIdle;
     protected const string playerTag = "Player";
 
     // Start is called before the first frame update
@@ -25,6 +16,7 @@ public class Enemy : Entity
         base.Start();
         homePos = transform.position;
         targetPos = transform.position;
+        isIdle = false;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -42,22 +34,24 @@ public class Enemy : Entity
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.CompareTag(playerTag) && collision.isTrigger)
+        if(collision.gameObject.CompareTag(playerTag) && collision.isTrigger && !isInvulnerable)
         {
             //damage player
             collision.gameObject.GetComponent<Player>().TakeHit(transform.position, 0);
         }
     }
 
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        OnTriggerEnter2D(collision);
+    }
+
     protected void MoveTo(Vector2 target)
     {
-        if(currentState == EnemyState.idle)
-        {
-            return;
-        }
+        if (isIdle) { return; }
 
         //move towards target position
-        transform.position =  Vector2.MoveTowards(transform.position, target, moveSpeed * Time.fixedDeltaTime);
+        transform.position =  Vector2.MoveTowards(transform.position, target, data.moveSpeed * Time.fixedDeltaTime);
         //rb.MovePosition(Vector2.MoveTowards(transform.position, target, moveSpeed * Time.fixedDeltaTime));
     }
 
@@ -67,17 +61,10 @@ public class Enemy : Entity
         return Vector2.Distance(transform.position, target);
     }
 
-    public void ChangeState(EnemyState state)
-    {
-        currentState = state;
-    }
-
     protected override IEnumerator Knockback(Vector2 direction)
     {
-        currentState = EnemyState.idle;
-
+        isIdle = true;
         yield return base.Knockback(direction);
-
-        currentState = EnemyState.walk;
+        isIdle = false;
     }
 }

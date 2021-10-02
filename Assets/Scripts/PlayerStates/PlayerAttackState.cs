@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerAttackState : PlayerBaseState
 {
-    public override void Start(GameObject _player)
+    public override void Start(Transform _player)
     {
         base.Start(_player);
         currentState = PlayerState.chargeSword;
@@ -17,7 +17,7 @@ public class PlayerAttackState : PlayerBaseState
 
     public override void Update()
     {
-        if(Input.GetButtonUp(Constants.BButton))
+        if(Input.GetButtonUp(BButton))
         {
             currentState = PlayerState.walk;
         }
@@ -25,7 +25,7 @@ public class PlayerAttackState : PlayerBaseState
 
     private IEnumerator Attack()
     {
-        yield return new WaitForSeconds(Constants.attackDuration);
+        yield return new WaitForSeconds(stateMachine.data.attackDuration);
 
         //if B button is kept held down player starts charging sword, else return to walk state
         stateMachine.ChangeState(currentState);

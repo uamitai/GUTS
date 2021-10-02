@@ -2,29 +2,28 @@
 
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class Entity : MonoBehaviour
 {
-    [SerializeField] protected uint maxHealth;
-    [SerializeField] protected int attack;
-
-    [FormerlySerializedAs("thrust")]
-    [SerializeField] private float knockbackVelocity;
-    [SerializeField] private float knockbackDur;
-    [SerializeField] private float knockbackCooldown;
+    [SerializeField] protected EntityData data;
+    [SerializeField] private Collider2D hitbox;
 
     protected Rigidbody2D rb;
     protected uint currentHealth;
+    protected bool isInvulnerable;
 
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        currentHealth = maxHealth;
+        currentHealth = data.maxHealth;
+        isInvulnerable = false;
     }
 
     public void TakeHit(Vector3 attackerPos, uint damage)
     {
+        //cant get hit if invulnerable
+        if (isInvulnerable) { return; }
+
         //Debug.Log("ouch");
         StartCoroutine(Knockback(transform.position - attackerPos));
     }
@@ -32,18 +31,29 @@ public class Entity : MonoBehaviour
     protected virtual IEnumerator Knockback(Vector2 direction)
     {
         //knock back
-        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-        rb.velocity = direction.normalized * knockbackVelocity;
+        rb.velocity = direction.normalized * data.knockbackVelocity;
 
-        yield return new WaitForSeconds(knockbackDur);
+        //dont take more damage
+        isInvulnerable = true;
+        hitbox.enabled = false;
+
+        yield return new WaitForSeconds(data.knockbackDuration);
 
         //stop for a moment
         rb.velocity = Vector2.zero;
-        rb.constraints = RigidbodyConstraints2D.FreezeAll;
 
-        yield return new WaitForSeconds(knockbackCooldown);
+        yield return new WaitForSeconds(data.knockbackCooldown);
         
         //continue
-        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        StartCoroutine(Invulnerability());
+    }
+
+    //the long awaited sequel to Knockback
+    private IEnumerator Invulnerability()
+    {
+        float period = Mathf.Max(data.invulnerabilityPeriod - data.knockbackDuration - data.knockbackCooldown, 0);
+        yield return new WaitForSeconds(period);
+        isInvulnerable = false;
+        hitbox.enabled = true;
     }
 }

@@ -17,7 +17,7 @@ public class EnemyRoam : Enemy
 
     private void FixedUpdate()
     {
-        if(currentState == EnemyState.walk)
+        if(!isIdle)
         {
             if (DistanceFrom(targetPos) > 0.01f)
             {
@@ -33,7 +33,7 @@ public class EnemyRoam : Enemy
 
     IEnumerator SetTargetPosition()
     {
-        currentState = EnemyState.idle;
+        isIdle = true;
 
         //set new position
         targetPos = homePos + roamRadius * Random.insideUnitCircle;
@@ -41,12 +41,12 @@ public class EnemyRoam : Enemy
         //wait random time
         yield return new WaitForSeconds(Random.value * maxWaitTime);
 
-        currentState = EnemyState.walk;
+        isIdle = false;
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if(currentState == EnemyState.walk)
+        if(!isIdle)
         {
             //Debug.Log("hit wall");
             StartCoroutine(SetTargetPosition());

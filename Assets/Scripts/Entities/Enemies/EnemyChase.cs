@@ -14,14 +14,13 @@ public class EnemyChase : Enemy
     protected override void Start()
     {
         base.Start();
-        currentState = EnemyState.walk;
         target = GameObject.FindWithTag(playerTag).transform;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if(currentState == EnemyState.walk)
+        if(!isIdle)
         {
             targetPos = target.position;
             distance = DistanceFrom(targetPos);

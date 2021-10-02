@@ -17,9 +17,9 @@ public enum PlayerState
 
 public class StateMachine : MonoBehaviour
 {
+    public PlayerData data;
     private Dictionary<PlayerState, PlayerBaseState> states = new Dictionary<PlayerState, PlayerBaseState>();
     private PlayerBaseState currentState;
-    private const string hitboxTag = "Enemy";
 
     // Start is called before the first frame update
     void Start()
@@ -52,10 +52,7 @@ public class StateMachine : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //sword hit something
-        if(collision.gameObject.CompareTag(hitboxTag) && collision.isTrigger)
-        {
-            currentState.OnSword(collision.gameObject);
-        }
+        currentState.OnSword(collision.gameObject, collision);
     }
 
     //change to new state and start it
@@ -68,9 +65,10 @@ public class StateMachine : MonoBehaviour
 
         //Debug.Log(state);
         currentState = states[state];
-        currentState.Start(gameObject);
+        currentState.Start(transform);
     }
 
+    //run coroutines for player states
     public void RunCoroutine(IEnumerator ienumerator)
     {
         StartCoroutine(ienumerator);

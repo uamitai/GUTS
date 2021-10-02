@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerLungeAttackState : PlayerBaseState
 {
     // Start is called before the first frame update
-    public override void Start(GameObject _player)
+    public override void Start(Transform _player)
     {
         base.Start(_player);
         sword.enabled = true;
@@ -21,7 +21,7 @@ public class PlayerLungeAttackState : PlayerBaseState
         }
 
         //on B button press do jump attack
-        if(Input.GetButtonDown(Constants.BButton))
+        if(Input.GetButtonDown(BButton))
         {
             stateMachine.StopAllCoroutines();
             rb.velocity = Vector2.zero;
@@ -29,7 +29,7 @@ public class PlayerLungeAttackState : PlayerBaseState
         }
 
         //on ZL trigger press finish lunging then recover
-        if(Input.GetButtonDown(Constants.ZLTrigger))
+        if(Input.GetButtonDown(ZLTrigger))
         {
             currentState = PlayerState.recover;
         }
@@ -39,23 +39,17 @@ public class PlayerLungeAttackState : PlayerBaseState
     {
         //setup
         currentState = PlayerState.lungeAttack;
-        rb.velocity = -player.transform.up * Constants.lungeAttackVelocity;
+        rb.velocity = -player.transform.up * stateMachine.data.lungeAttackVelocity;
 
         //wait duration
-        yield return new WaitForSeconds(Constants.lungeAttackDuration);
+        yield return new WaitForSeconds(stateMachine.data.lungeAttackDuration);
 
         //stop
         rb.velocity = Vector2.zero;
 
         //change state
-        if (currentState == PlayerState.recover)
-        {
-            stateMachine.ChangeState(PlayerState.recover);
-        }
-        else
-        {
-            stateMachine.ChangeState(PlayerState.walk);
-        }
+        currentState = currentState == PlayerState.recover ? PlayerState.recover : PlayerState.walk;
+        stateMachine.ChangeState(currentState);
     }
 
     private IEnumerator ExecuteJumpAttack()
@@ -64,16 +58,17 @@ public class PlayerLungeAttackState : PlayerBaseState
         //Debug.Log("jumpAttack");
         currentState = PlayerState.jumpAttack;
         sword.enabled = false;
-        yield return new WaitForSeconds(Constants.jumpAttackPrepTime);
+        yield return new WaitForSeconds(stateMachine.data.jumpAttackPrepTime);
 
         //jump
         sword.enabled = true;
-        rb.velocity = -player.transform.up * Constants.jumpAttackVelocity;
-        yield return new WaitForSeconds(Constants.jumpAttackDuration);
+        rb.velocity = -player.transform.up * stateMachine.data.jumpAttackVelocity;
+        yield return new WaitForSeconds(stateMachine.data.jumpAttackDuration);
 
         //stop
+        //sword.enabled = false;
         rb.velocity = Vector2.zero;
-        yield return new WaitForSeconds(Constants.jumpAttackCooldown);
+        yield return new WaitForSeconds(stateMachine.data.jumpAttackCooldown);
         stateMachine.ChangeState(PlayerState.walk);
     }
 }

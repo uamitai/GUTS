@@ -7,7 +7,7 @@ public class PlayerChargeSwordState : PlayerBaseState
     private float chargeTime;
 
     // Start is called before the first frame update
-    public override void Start(GameObject _player)
+    public override void Start(Transform _player)
     {
         base.Start(_player);
 
@@ -19,30 +19,30 @@ public class PlayerChargeSwordState : PlayerBaseState
     // Update is called once per frame
     public override void Update()
     {
-        if(Input.GetButtonDown(Constants.ZLTrigger))
+        if(Input.GetButtonDown(ZLTrigger))
         {
             ZLTriggerPressed();
         }
 
-        if(Input.GetButtonUp(Constants.BButton))
+        if(Input.GetButtonUp(BButton))
         {
             BButtonReleased();
         }
 
         //player can walk during the charge sword state
         vel = new Vector2(
-            Input.GetAxisRaw(Constants.LeftStickHorizontal),
-            Input.GetAxisRaw(Constants.LeftStickVertical)
+            Input.GetAxisRaw(LeftStickHorizontal),
+            Input.GetAxisRaw(LeftStickVertical)
             );
     }
 
     public override void FixedUpdate()
     {
-        if (vel.magnitude > Constants.moveThreshhold && currentState == PlayerState.chargeSword)
+        if (vel.magnitude > stateMachine.data.moveThreshhold && currentState == PlayerState.chargeSword)
         {
             //move player
             //x = x0 + v * dt
-            rb.MovePosition(rb.position + vel.normalized * Constants.holdSwordWalkSpeed * Time.fixedDeltaTime);
+            rb.MovePosition(rb.position + vel.normalized * stateMachine.data.holdSwordWalkSpeed * Time.fixedDeltaTime);
         }
     }
 
@@ -58,7 +58,7 @@ public class PlayerChargeSwordState : PlayerBaseState
         //Debug.Log(dotProduct);
 
         //if the dot product is high enough perform a side jump, otherwise go to recovery state
-        if(Mathf.Abs(dotProduct) > Mathf.Cos(Constants.sideJumpAngle))
+        if(Mathf.Abs(dotProduct) > Mathf.Cos(stateMachine.data.sideJumpAngle) && vel.magnitude > stateMachine.data.moveThreshhold)
         {
             stateMachine.RunCoroutine(ExecuteSideJump(Mathf.Sign(dotProduct)));
         }
@@ -79,7 +79,7 @@ public class PlayerChargeSwordState : PlayerBaseState
             stateMachine.ChangeState(PlayerState.lungeAttack);
         }
         //didn't charge enough
-        else if (Time.time - chargeTime < Constants.chargeSwordDuration)
+        else if (Time.time - chargeTime < stateMachine.data.chargeSwordDuration)
         {
             stateMachine.ChangeState(PlayerState.walk);
         }
@@ -97,14 +97,14 @@ public class PlayerChargeSwordState : PlayerBaseState
         currentState = PlayerState.sideJump;
 
         //jump in given direction
-        rb.velocity = player.transform.right * direction * Constants.sideJumpVelocity;
+        rb.velocity = player.transform.right * direction * stateMachine.data.sideJumpVelocity;
 
         //wait jump duration
-        yield return new WaitForSeconds(Constants.sideJumpDuration);
+        yield return new WaitForSeconds(stateMachine.data.sideJumpDuration);
 
         //cooldown and return
         rb.velocity = Vector2.zero;
-        yield return new WaitForSeconds(Constants.sideJumpCooldownDuration);
+        yield return new WaitForSeconds(stateMachine.data.sideJumpCooldownDuration);
         currentState = PlayerState.chargeSword;
     }
 }
